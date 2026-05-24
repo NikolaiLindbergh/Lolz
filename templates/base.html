@@ -33,6 +33,9 @@
         <li><a href="{{ url_for('admin.users') }}" class="{{ 'active' if 'admin.users' in (request.endpoint or '') }}"><i class="bi bi-people-fill"></i> Manage Users</a></li>
         <li><a href="{{ url_for('admin.patients') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.patients' }}"><i class="bi bi-folder2-open"></i> All Patients</a></li>
         <li><a href="{{ url_for('admin.reports') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.reports' }}"><i class="bi bi-bar-chart-fill"></i> Reports</a></li>
+        <li><a href="{{ url_for('admin.analytics') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.analytics' }}"><i class="bi bi-graph-up"></i> Analytics</a></li>
+        <li><a href="{{ url_for('admin.survey') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.survey' }}"><i class="bi bi-patch-question-fill"></i> Survey</a></li>
+        <li><a href="{{ url_for('admin.patient_surveys') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.patient_surveys' }}"><i class="bi bi-file-medical-fill"></i> Patient Surveys</a></li>
         <li><a href="{{ url_for('admin.audit') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.audit' }}"><i class="bi bi-journal-text"></i> Audit Logs</a></li>
       </ul>
       {% elif current_user.is_admin() %}
@@ -42,6 +45,9 @@
         <li><a href="{{ url_for('admin.users') }}" class="{{ 'active' if 'admin.users' in (request.endpoint or '') }}"><i class="bi bi-people-fill"></i> Manage Users</a></li>
         <li><a href="{{ url_for('admin.patients') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.patients' }}"><i class="bi bi-folder2-open"></i> All Patients</a></li>
         <li><a href="{{ url_for('admin.reports') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.reports' }}"><i class="bi bi-bar-chart-fill"></i> Reports</a></li>
+        <li><a href="{{ url_for('admin.analytics') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.analytics' }}"><i class="bi bi-graph-up"></i> Analytics</a></li>
+        <li><a href="{{ url_for('admin.survey') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.survey' }}"><i class="bi bi-patch-question-fill"></i> Survey</a></li>
+        <li><a href="{{ url_for('admin.patient_surveys') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.patient_surveys' }}"><i class="bi bi-file-medical-fill"></i> Patient Surveys</a></li>
         <li><a href="{{ url_for('admin.audit') }}" class="{{ 'active' if (request.endpoint or '') == 'admin.audit' }}"><i class="bi bi-journal-text"></i> Audit Logs</a></li>
       </ul>
       {% else %}
@@ -49,6 +55,9 @@
       <ul class="sidebar-nav">
         <li><a href="{{ url_for('user.dashboard') }}" class="{{ 'active' if (request.endpoint or '') == 'user.dashboard' }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
         <li><a href="{{ url_for('user.patients') }}" class="{{ 'active' if 'patient' in (request.endpoint or '') }}"><i class="bi bi-person-lines-fill"></i> My Patients</a></li>
+        <li><a href="{{ url_for('user.reports') }}" class="{{ 'active' if (request.endpoint or '') == 'user.reports' }}"><i class="bi bi-bar-chart-fill"></i> Reports</a></li>
+        <li><a href="{{ url_for('user.analytics') }}" class="{{ 'active' if (request.endpoint or '') == 'user.analytics' }}"><i class="bi bi-graph-up"></i> Analytics</a></li>
+        <li><a href="{{ url_for('user.survey') }}" class="{{ 'active' if (request.endpoint or '') == 'user.survey' }}"><i class="bi bi-patch-question-fill"></i> Survey</a></li>
         <li><a href="{{ url_for('user.new_patient') }}" class="{{ 'active' if (request.endpoint or '') == 'user.new_patient' }}"><i class="bi bi-person-plus-fill"></i> Register Patient</a></li>
         <li><a href="{{ url_for('user.profile') }}" class="{{ 'active' if (request.endpoint or '') == 'user.profile' }}"><i class="bi bi-person-circle"></i> My Profile</a></li>
       </ul>

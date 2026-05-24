@@ -7,9 +7,14 @@
     <h2 class="fw-bold mb-0"><i class="bi bi-person-circle me-2 text-primary"></i>{{ patient.full_name }}</h2>
     <p class="text-muted mb-0">Patient ID: <strong>{{ patient.patient_id }}</strong> · Registered {{ patient.created_at.strftime('%B %d, %Y') }}</p>
   </div>
-  <a href="{{ url_for('user.ai_consult', patient_id=patient.id) }}" class="btn btn-success btn-lg">
-    <i class="bi bi-cpu me-2"></i>Start AI Consultation
-  </a>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('user.ai_consult', patient_id=patient.id) }}" class="btn btn-success btn-lg">
+      <i class="bi bi-cpu me-2"></i>Start AI Consultation
+    </a>
+    <a href="{{ url_for('user.patient_survey', patient_id=patient.id) }}" class="btn btn-outline-primary btn-lg">
+      <i class="bi bi-pencil-square me-2"></i>Patient Survey
+    </a>
+  </div>
 </div>
 
 <div class="row g-4 mb-4">
@@ -42,6 +47,19 @@
         <hr class="my-2">
         <p class="mb-0"><span class="text-muted small">Medical History:</span><br>
           {{ patient.medical_history or 'None reported' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-12 col-xl-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-qr-code me-2 text-info"></i>Patient Survey QR Code</div>
+      <div class="card-body text-center">
+        <div id="patientSurveyQr" class="mx-auto mb-3"></div>
+        <p class="small text-muted mb-1">Scan to open the survey for {{ patient.full_name }}.</p>
+        <p class="small text-break"><a href="{{ url_for('user.patient_survey', patient_id=patient.id, _external=True) }}">{{ url_for('user.patient_survey', patient_id=patient.id, _external=True) }}</a></p>
       </div>
     </div>
   </div>
@@ -120,4 +138,17 @@
 <div class="mt-3">
   <a href="{{ url_for('user.patients') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Patients</a>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-Jd+zXn8qjDn8QAFRA+9ytX+EoH12hZPVF0kCUdAIw2f6du+uAqCqOnMTO+dQ6QSNq50Zhu+BAHn0a6RMm+7SHQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  const surveyUrl = {{ url_for('user.patient_survey', patient_id=patient.id, _external=True) | tojson }};
+  new QRCode(document.getElementById('patientSurveyQr'), {
+    text: surveyUrl,
+    width: 220,
+    height: 220,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
 {% endblock %}

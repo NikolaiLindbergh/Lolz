@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
-from database.models import db, Patient, Consultation, AuditLog
+from database.models import db, User, Patient, Consultation, AuditLog, SurveyResponse, PatientSurvey, SurveyQuestion, SurveyAnswer
 from ai.clinical_ai import analyze_patient
 from datetime import datetime
 import json
@@ -168,3 +168,129 @@ def profile():
         flash('Profile updated successfully.', 'success')
 
     return render_template('user/profile.html')
+
+@user_bp.route('/patients/<int:patient_id>/patient-survey', methods=['GET', 'POST'])
+@login_required
+def patient_survey(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+    if request.method == 'POST':
+        patient_satisfaction = request.form.get('patient_satisfaction', type=int)
+        care_quality = request.form.get('care_quality', type=int)
+        comfort_level = request.form.get('comfort_level', type=int)
+        comments = request.form.get('comments', '').strip()
+
+        survey = PatientSurvey(
+            patient_id=patient.id,
+            user_id=current_user.id,
+            patient_satisfaction=patient_satisfaction,
+            care_quality=care_quality,
+            comfort_level=comfort_level,
+            comments=comments
+        )
+        db.session.add(survey)
+        log_action('PATIENT_SURVEY', f'Patient survey created for {patient.patient_id}')
+        flash('Patient survey submitted successfully.', 'success')
+        return redirect(url_for('user.patient_detail', patient_id=patient.id))
+
+    return render_template('user/patient_survey.html', patient=patient)
+@user_bp.route('/reports')
+@login_required
+def reports():
+    my_patients = Patient.query.filter_by(created_by=current_user.id).count()
+    my_consultations = Consultation.query.filter_by(user_id=current_user.id).count()
+    ai_assisted = Consultation.query.filter(
+        Consultation.user_id == current_user.id,
+        Consultation.ai_analysis != None,
+        Consultation.ai_analysis != ''
+    ).count()
+    consultations_by_status = db.session.query(
+        Consultation.status, db.func.count(Consultation.id)
+    ).filter(Consultation.user_id == current_user.id).group_by(Consultation.status).all()
+    return render_template('user/reports.html',
+                           my_patients=my_patients,
+                           my_consultations=my_consultations,
+                           ai_assisted=ai_assisted,
+                           consultations_by_status=consultations_by_status)
+
+@user_bp.route('/analytics')
+@login_required
+def analytics():
+    my_consultations = Consultation.query.filter_by(user_id=current_user.id).count()
+    ai_assisted = Consultation.query.filter(
+        Consultation.user_id == current_user.id,
+        Consultation.ai_analysis != None,
+        Consultation.ai_analysis != ''
+    ).count()
+    ai_assist_rate = round((ai_assisted / my_consultations * 100), 1) if my_consultations else 0
+    consultations_by_status = db.session.query(
+        Consultation.status, db.func.count(Consultation.id)
+    ).filter(Consultation.user_id == current_user.id).group_by(Consultation.status).all()
+    top_patients = db.session.query(
+        Patient.full_name, db.func.count(Consultation.id).label('count')
+    ).join(Consultation, Consultation.patient_id == Patient.id)
+    top_patients = top_patients.filter(Consultation.user_id == current_user.id).group_by(Patient.id).order_by(db.desc('count')).limit(5).all()
+    total_surveys = SurveyResponse.query.count()
+    average_satisfaction = db.session.query(db.func.avg(SurveyResponse.satisfaction)).scalar() or 0
+    average_usefulness = db.session.query(db.func.avg(SurveyResponse.usefulness)).scalar() or 0
+    return render_template('user/analytics.html',
+                           my_consultations=my_consultations,
+                           ai_assisted=ai_assisted,
+                           ai_assist_rate=ai_assist_rate,
+                           consultations_by_status=consultations_by_status,
+                           top_patients=top_patients,
+                           total_surveys=total_surveys,
+                           average_satisfaction=round(average_satisfaction, 2),
+                           average_usefulness=round(average_usefulness, 2))
+
+@user_bp.route('/survey', methods=['GET', 'POST'])
+@login_required
+def survey():
+    survey_questions = SurveyQuestion.query.filter_by(active=True).order_by(SurveyQuestion.order).all()
+
+    if request.method == 'POST':
+        respondent_name = request.form.get('respondent_name', '').strip() or 'Anonymous'
+        department = request.form.get('department', '').strip() or 'Unknown'
+        comments = request.form.get('comments', '').strip()
+
+        response = SurveyResponse(
+            respondent_name=respondent_name,
+            department=department,
+            comments=comments
+        )
+        db.session.add(response)
+        db.session.flush()
+
+        if survey_questions:
+            for question in survey_questions:
+                answer_text = request.form.get(f'question_{question.id}', '').strip()
+                answer = SurveyAnswer(
+                    response_id=response.id,
+                    question_id=question.id,
+                    answer_text=answer_text
+                )
+                db.session.add(answer)
+        else:
+            satisfaction = request.form.get('satisfaction', type=int)
+            usefulness = request.form.get('usefulness', type=int)
+            ease_of_use = request.form.get('ease_of_use', type=int)
+            response.satisfaction = satisfaction
+            response.usefulness = usefulness
+            response.ease_of_use = ease_of_use
+
+        log_action('SURVEY_RESPONSE', f'Added survey response from {respondent_name}')
+        db.session.commit()
+        flash('Survey response submitted successfully.', 'success')
+        return redirect(url_for('user.survey'))
+
+    survey_responses = SurveyResponse.query.order_by(SurveyResponse.created_at.desc()).limit(20).all()
+    total_surveys = SurveyResponse.query.count()
+    average_satisfaction = db.session.query(db.func.avg(SurveyResponse.satisfaction)).scalar() or 0
+    average_usefulness = db.session.query(db.func.avg(SurveyResponse.usefulness)).scalar() or 0
+    average_ease = db.session.query(db.func.avg(SurveyResponse.ease_of_use)).scalar() or 0
+    return render_template('user/survey.html',
+                           survey_responses=survey_responses,
+                           total_surveys=total_surveys,
+                           average_satisfaction=round(average_satisfaction, 2),
+                           average_usefulness=round(average_usefulness, 2),
+                           average_ease=round(average_ease, 2),
+                           survey_questions=survey_questions)

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Survey – ClinAI{% endblock %}
+{% block breadcrumb %}Admin / Survey{% endblock %}
+{% block page_content %}
+<div class="page-header mb-4">
+  <h2 class="fw-bold"><i class="bi bi-patch-question-fill me-2 text-info"></i>Survey Collection</h2>
+  <p class="text-muted">Collect user feedback and review survey response trends.</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-pencil-square me-2 text-info"></i>Submit Survey Response</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Respondent Name</label>
+            <input type="text" name="respondent_name" class="form-control" placeholder="e.g. Dr. Jane Doe">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <input type="text" name="department" class="form-control" placeholder="e.g. Pediatrics">
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+              <label class="form-label">Satisfaction</label>
+              <select name="satisfaction" class="form-select">
+                <option value="5">5 – Excellent</option>
+                <option value="4">4 – Very Good</option>
+                <option value="3">3 – Good</option>
+                <option value="2">2 – Fair</option>
+                <option value="1">1 – Poor</option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label">Usefulness</label>
+              <select name="usefulness" class="form-select">
+                <option value="5">5 – Excellent</option>
+                <option value="4">4 – Very Good</option>
+                <option value="3">3 – Good</option>
+                <option value="2">2 – Fair</option>
+                <option value="1">1 – Poor</option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label">Ease of Use</label>
+              <select name="ease_of_use" class="form-select">
+                <option value="5">5 – Excellent</option>
+                <option value="4">4 – Very Good</option>
+                <option value="3">3 – Good</option>
+                <option value="2">2 – Fair</option>
+                <option value="1">1 – Poor</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Comments</label>
+            <textarea name="comments" rows="4" class="form-control" placeholder="Share any suggestions or observations"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Response</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-tools me-2 text-secondary"></i>Survey Question Builder</div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('admin.add_survey_question') }}">
+          <div class="mb-3">
+            <label class="form-label">Question Text</label>
+            <input type="text" name="question_text" class="form-control" placeholder="Example: How likely are you to recommend our service?">
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-5">
+              <label class="form-label">Question Type</label>
+              <select name="question_type" class="form-select">
+                <option value="text">Text</option>
+                <option value="rating">Rating</option>
+                <option value="select">Dropdown</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Options (comma separated)</label>
+              <input type="text" name="options" class="form-control" placeholder="Yes,No,Maybe">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Order</label>
+              <input type="number" name="order" class="form-control" value="0" min="0">
+            </div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="is_required" id="is_required">
+            <label class="form-check-label" for="is_required">Required question</label>
+          </div>
+          <button class="btn btn-primary">Add Question</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-card-list me-2 text-secondary"></i>Existing Survey Questions</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light"><tr><th>#</th><th>Question</th><th>Type</th><th>Options</th><th>Required</th><th></th></tr></thead>
+          <tbody>
+            {% for question in survey_questions %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ question.question_text }}</td>
+              <td>{{ question.question_type|capitalize }}</td>
+              <td>{{ question.options or '—' }}</td>
+              <td>{{ 'Yes' if question.is_required else 'No' }}</td>
+              <td><a href="{{ url_for('admin.delete_survey_question', question_id=question.id) }}" class="btn btn-sm btn-outline-danger">Delete</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted py-3">No survey questions defined yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="stat-card stat-blue">
+          <div class="stat-icon"><i class="bi bi-check2-circle"></i></div>
+          <div>
+            <div class="stat-number">{{ total_surveys }}</div>
+            <div class="stat-label">Total Responses</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card stat-green">
+          <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+          <div>
+            <div class="stat-number">{{ average_satisfaction }}</div>
+            <div class="stat-label">Avg Satisfaction</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card stat-purple">
+          <div class="stat-icon"><i class="bi bi-hand-thumbs-up-fill"></i></div>
+          <div>
+            <div class="stat-number">{{ average_usefulness }}</div>
+            <div class="stat-label">Avg Usefulness</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card stat-orange">
+          <div class="stat-icon"><i class="bi bi-speedometer2"></i></div>
+          <div>
+            <div class="stat-number">{{ average_ease }}</div>
+            <div class="stat-label">Avg Ease of Use</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-check me-2 text-secondary"></i>Recent Survey Responses</span>
+        <a href="{{ url_for('admin.survey') }}" class="btn btn-sm btn-outline-primary">Refresh</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light"><tr><th>Respondent</th><th>Dept</th><th>Satisfaction</th><th>Usefulness</th><th>Date</th><th></th></tr></thead>
+          <tbody>
+            {% for response in survey_responses %}
+            <tr>
+              <td>{{ response.respondent_name }}</td>
+              <td>{{ response.department }}</td>
+              <td>{{ response.satisfaction }}</td>
+              <td>{{ response.usefulness }}</td>
+              <td><small>{{ response.created_at.strftime('%b %d, %Y') }}</small></td>
+              <td><a href="{{ url_for('admin.edit_survey_response', survey_id=response.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted py-3">No survey responses yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

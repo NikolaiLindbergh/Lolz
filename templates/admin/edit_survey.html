@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Edit Survey Response – ClinAI{% endblock %}
+{% block breadcrumb %}Admin / Edit Survey Response{% endblock %}
+{% block page_content %}
+<div class="page-header mb-4">
+  <h2 class="fw-bold"><i class="bi bi-pencil-square me-2 text-warning"></i>Edit Survey Response</h2>
+  <p class="text-muted">Update the respondent details or survey ratings.</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Respondent Name</label>
+        <input type="text" name="respondent_name" value="{{ survey.respondent_name }}" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Department</label>
+        <input type="text" name="department" value="{{ survey.department }}" class="form-control">
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-sm-4">
+          <label class="form-label">Satisfaction</label>
+          <select name="satisfaction" class="form-select">
+            {% for value in [5,4,3,2,1] %}
+            <option value="{{ value }}" {% if survey.satisfaction == value %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Usefulness</label>
+          <select name="usefulness" class="form-select">
+            {% for value in [5,4,3,2,1] %}
+            <option value="{{ value }}" {% if survey.usefulness == value %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Ease of Use</label>
+          <select name="ease_of_use" class="form-select">
+            {% for value in [5,4,3,2,1] %}
+            <option value="{{ value }}" {% if survey.ease_of_use == value %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Comments</label>
+        <textarea name="comments" rows="4" class="form-control">{{ survey.comments }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="{{ url_for('admin.survey') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

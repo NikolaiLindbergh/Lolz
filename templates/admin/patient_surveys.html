@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Patient Surveys – ClinAI{% endblock %}
+{% block breadcrumb %}Admin / Patient Surveys{% endblock %}
+{% block page_content %}
+<div class="page-header mb-4">
+  <h2 class="fw-bold"><i class="bi bi-file-medical-fill me-2 text-primary"></i>Patient Survey Reviews</h2>
+  <p class="text-muted">Only admin can review, edit, and manage patient survey submissions.</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Patient</th>
+          <th>Submitted By</th>
+          <th>Satisfaction</th>
+          <th>Care</th>
+          <th>Comfort</th>
+          <th>Comments</th>
+          <th>Review Notes</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for survey in surveys %}
+        <tr>
+          <td>{{ survey.patient.full_name }}</td>
+          <td>{{ survey.patient.created_by_user.full_name or survey.patient.created_by_user.username }}</td>
+          <td>{{ survey.patient_satisfaction }}</td>
+          <td>{{ survey.care_quality }}</td>
+          <td>{{ survey.comfort_level }}</td>
+          <td>{{ survey.comments|default('')|truncate(60, True, '...') }}</td>
+          <td>{{ survey.review_notes|default('')|truncate(60, True, '...') }}</td>
+          <td><small>{{ survey.created_at.strftime('%b %d, %Y') }}</small></td>
+          <td><a href="{{ url_for('admin.edit_patient_survey', survey_id=survey.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No patient surveys submitted yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

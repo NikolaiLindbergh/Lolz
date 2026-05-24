@@ -50,6 +50,7 @@ class Patient(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     consultations = db.relationship('Consultation', backref='patient', lazy=True)
+    patient_surveys = db.relationship('PatientSurvey', backref='patient', lazy=True)
 
 
 class Consultation(db.Model):
@@ -65,6 +66,56 @@ class Consultation(db.Model):
     ai_recommendations = db.Column(db.Text)
     doctor_notes = db.Column(db.Text)
     status = db.Column(db.String(30), default='pending')  # pending, reviewed, closed
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PatientSurvey(db.Model):
+    __tablename__ = 'patient_surveys'
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    patient_satisfaction = db.Column(db.Integer, default=0)
+    care_quality = db.Column(db.Integer, default=0)
+    comfort_level = db.Column(db.Integer, default=0)
+    comments = db.Column(db.Text)
+    review_notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class SurveyQuestion(db.Model):
+    __tablename__ = 'survey_questions'
+    id = db.Column(db.Integer, primary_key=True)
+    question_text = db.Column(db.String(250), nullable=False)
+    question_type = db.Column(db.String(50), default='text')
+    options = db.Column(db.Text)
+    is_required = db.Column(db.Boolean, default=False)
+    order = db.Column(db.Integer, default=0)
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    answers = db.relationship('SurveyAnswer', backref='question', lazy=True)
+
+
+class SurveyResponse(db.Model):
+    __tablename__ = 'survey_responses'
+    id = db.Column(db.Integer, primary_key=True)
+    respondent_name = db.Column(db.String(150), nullable=False)
+    department = db.Column(db.String(100), nullable=False)
+    satisfaction = db.Column(db.Integer, default=0)
+    usefulness = db.Column(db.Integer, default=0)
+    ease_of_use = db.Column(db.Integer, default=0)
+    comments = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    answers = db.relationship('SurveyAnswer', backref='response', lazy=True)
+
+
+class SurveyAnswer(db.Model):
+    __tablename__ = 'survey_answers'
+    id = db.Column(db.Integer, primary_key=True)
+    response_id = db.Column(db.Integer, db.ForeignKey('survey_responses.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('survey_questions.id'), nullable=False)
+    answer_text = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 

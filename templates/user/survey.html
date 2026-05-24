@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Survey – ClinAI{% endblock %}
+{% block breadcrumb %}Survey{% endblock %}
+{% block page_content %}
+<div class="page-header mb-4">
+  <h2 class="fw-bold"><i class="bi bi-patch-question-fill me-2 text-info"></i>Survey</h2>
+  <p class="text-muted">Submit feedback and review recent responses.</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-pencil-square me-2 text-info"></i>Submit Feedback</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Respondent Name</label>
+            <input type="text" name="respondent_name" class="form-control" placeholder="e.g. Dr. Jane Doe">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <input type="text" name="department" class="form-control" placeholder="e.g. Cardiology">
+          </div>
+
+          {% if survey_questions %}
+          <div class="mb-3">
+            <p class="text-muted small mb-2">Survey Questions</p>
+            {% for question in survey_questions %}
+              <div class="mb-3">
+                <label class="form-label">{{ question.question_text }}{% if question.is_required %} <span class="text-danger">*</span>{% endif %}</label>
+                {% if question.question_type == 'rating' %}
+                  <select name="question_{{ question.id }}" class="form-select" {% if question.is_required %}required{% endif %}>
+                    <option value="">Select rating</option>
+                    <option value="5">5 – Excellent</option>
+                    <option value="4">4 – Very Good</option>
+                    <option value="3">3 – Good</option>
+                    <option value="2">2 – Fair</option>
+                    <option value="1">1 – Poor</option>
+                  </select>
+                {% elif question.question_type == 'select' %}
+                  <select name="question_{{ question.id }}" class="form-select" {% if question.is_required %}required{% endif %}>
+                    <option value="">Choose an answer</option>
+                    {% set options = question.options.split(',') if question.options else [] %}
+                    {% for option in options if option.strip() %}
+                    <option value="{{ option.strip() }}">{{ option.strip() }}</option>
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type="text" name="question_{{ question.id }}" class="form-control" {% if question.is_required %}required{% endif %}>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="mb-3"><label class="form-label">Additional Comments</label><textarea name="comments" rows="4" class="form-control" placeholder="Any extra feedback"></textarea></div>
+          {% else %}
+          <div class="row g-3 mb-3">
+            <div class="col-sm-4"><label class="form-label">Satisfaction</label><select name="satisfaction" class="form-select"><option value="5">5 – Excellent</option><option value="4">4 – Very Good</option><option value="3">3 – Good</option><option value="2">2 – Fair</option><option value="1">1 – Poor</option></select></div>
+            <div class="col-sm-4"><label class="form-label">Usefulness</label><select name="usefulness" class="form-select"><option value="5">5 – Excellent</option><option value="4">4 – Very Good</option><option value="3">3 – Good</option><option value="2">2 – Fair</option><option value="1">1 – Poor</option></select></div>
+            <div class="col-sm-4"><label class="form-label">Ease of Use</label><select name="ease_of_use" class="form-select"><option value="5">5 – Excellent</option><option value="4">4 – Very Good</option><option value="3">3 – Good</option><option value="2">2 – Fair</option><option value="1">1 – Poor</option></select></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Comments</label><textarea name="comments" rows="4" class="form-control" placeholder="Your comments"></textarea></div>
+          {% endif %}
+          <button type="submit" class="btn btn-primary">Submit Response</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="row g-3">
+      <div class="col-md-4"><div class="stat-card stat-blue"><div class="stat-icon"><i class="bi bi-check2-circle"></i></div><div><div class="stat-number">{{ total_surveys }}</div><div class="stat-label">Total Responses</div></div></div></div>
+      <div class="col-md-4"><div class="stat-card stat-green"><div class="stat-icon"><i class="bi bi-star-fill"></i></div><div><div class="stat-number">{{ average_satisfaction }}</div><div class="stat-label">Avg Satisfaction</div></div></div></div>
+      <div class="col-md-4"><div class="stat-card stat-purple"><div class="stat-icon"><i class="bi bi-hand-thumbs-up-fill"></i></div><div><div class="stat-number">{{ average_usefulness }}</div><div class="stat-label">Avg Usefulness</div></div></div></div>
+      <div class="col-md-4"><div class="stat-card stat-orange"><div class="stat-icon"><i class="bi bi-speedometer2"></i></div><div><div class="stat-number">{{ average_ease }}</div><div class="stat-label">Avg Ease</div></div></div></div>
+    </div>
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-list-check me-2 text-secondary"></i>Recent Responses</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light"><tr><th>Name</th><th>Dept</th><th>Satisfaction</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for response in survey_responses %}
+            <tr>
+              <td>{{ response.respondent_name }}</td>
+              <td>{{ response.department }}</td>
+              <td>{{ response.satisfaction }}</td>
+              <td><small>{{ response.created_at.strftime('%b %d, %Y') }}</small></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No responses yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

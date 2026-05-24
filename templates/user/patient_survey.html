@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Patient Survey – ClinAI{% endblock %}
+{% block breadcrumb %}Patient Survey / {{ patient.full_name }}{% endblock %}
+{% block page_content %}
+<div class="page-header mb-4">
+  <h2 class="fw-bold"><i class="bi bi-file-medical-fill me-2 text-primary"></i>Patient Survey</h2>
+  <p class="text-muted">Submit patient survey feedback for {{ patient.full_name }}.</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Patient</label>
+        <input type="text" class="form-control" value="{{ patient.full_name }}" disabled>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Satisfaction</label>
+          <select name="patient_satisfaction" class="form-select">
+            <option value="5">5 – Excellent</option>
+            <option value="4">4 – Very Good</option>
+            <option value="3">3 – Good</option>
+            <option value="2">2 – Fair</option>
+            <option value="1">1 – Poor</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Care Quality</label>
+          <select name="care_quality" class="form-select">
+            <option value="5">5 – Excellent</option>
+            <option value="4">4 – Very Good</option>
+            <option value="3">3 – Good</option>
+            <option value="2">2 – Fair</option>
+            <option value="1">1 – Poor</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Comfort Level</label>
+          <select name="comfort_level" class="form-select">
+            <option value="5">5 – Excellent</option>
+            <option value="4">4 – Very Good</option>
+            <option value="3">3 – Good</option>
+            <option value="2">2 – Fair</option>
+            <option value="1">1 – Poor</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Comments</label>
+        <textarea name="comments" rows="4" class="form-control" placeholder="Patient notes or observations"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit Survey</button>
+      <a href="{{ url_for('user.patient_detail', patient_id=patient.id) }}" class="btn btn-outline-secondary ms-2">Back to Patient</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
