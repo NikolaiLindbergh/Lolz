@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Login – ClinAI{% endblock %}
+{% block page_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg,#1a3a5c 0%,#0d6efd 100%);">
+  <div class="card shadow-lg border-0" style="width: 420px; border-radius: 16px; overflow:hidden;">
+    <div class="card-header text-center py-4" style="background:#0d6efd;">
+      <i class="bi bi-heart-pulse-fill text-white" style="font-size:2.5rem;"></i>
+      <h4 class="text-white fw-bold mt-2 mb-0">ClinAI</h4>
+      <small class="text-white-50">Healthcare AI Clinical System</small>
+    </div>
+    <div class="card-body px-4 py-4">
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-semibold"><i class="bi bi-person me-1"></i>Username</label>
+          <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter username" required autofocus />
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold"><i class="bi bi-lock me-1"></i>Password</label>
+          <input type="password" name="password" class="form-control form-control-lg" placeholder="Enter password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Login
+        </button>
+      </form>
+    </div>
+    <div class="card-footer text-center py-3 bg-light">
+      <small class="text-muted">Secure access for authorized clinical staff.</small>
+    </div>
+  </div>
+</div>
+{% endblock %}

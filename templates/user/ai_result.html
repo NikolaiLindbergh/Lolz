@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}AI Analysis Result – ClinAI{% endblock %}
+{% block breadcrumb %}Patients / {{ patient.full_name }} / AI Result{% endblock %}
+{% block page_content %}
+
+{% if ai_result.error %}
+<div class="alert alert-danger">
+  <i class="bi bi-exclamation-octagon me-2"></i><strong>AI Error:</strong> {{ ai_result.message }}
+  <br><small>Please make sure your ANTHROPIC_API_KEY is set in the .env file.</small>
+</div>
+{% else %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-0"><i class="bi bi-cpu me-2 text-success"></i>AI Clinical Analysis</h2>
+    <p class="text-muted mb-0">{{ patient.full_name }} · {{ patient.patient_id }}</p>
+  </div>
+  <span class="badge bg-success fs-6 px-3 py-2">Analysis Complete</span>
+</div>
+
+<!-- CLINICAL SUMMARY -->
+<div class="card border-0 shadow-sm mb-4 border-start border-4 border-primary">
+  <div class="card-body">
+    <h6 class="text-uppercase text-muted fw-bold small mb-2"><i class="bi bi-file-medical me-1"></i>Clinical Summary</h6>
+    <p class="mb-0 fs-6">{{ ai_result.clinical_summary }}</p>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- POSSIBLE DIAGNOSES -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-list-check me-2 text-primary"></i>Possible Diagnoses</div>
+      <div class="card-body p-0">
+        {% if ai_result.possible_diagnoses %}
+        <ul class="list-group list-group-flush">
+          {% for dx in ai_result.possible_diagnoses %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <strong>{{ dx.diagnosis }}</strong>
+              <span class="badge {% if dx.likelihood == 'High' %}bg-danger{% elif dx.likelihood == 'Moderate' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                {{ dx.likelihood }}
+              </span>
+            </div>
+            <small class="text-muted">{{ dx.reasoning }}</small>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted p-3 mb-0">No specific diagnoses suggested.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDED TESTS -->
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white fw-bold"><i class="bi bi-clipboard2-check me-2 text-info"></i>Recommended Diagnostic Tests</div>
+      <div class="card-body">
+        {% if ai_result.recommended_tests %}
+        <ul class="list-unstyled mb-0">
+          {% for test in ai_result.recommended_tests %}
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-info me-2"></i>{{ test }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">No specific tests recommended.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RED FLAGS -->
+{% if ai_result.red_flags %}
+<div class="card border-0 shadow-sm mb-4 border-danger">
+  <div class="card-header bg-danger text-white fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Red Flags / Warning Signs</div>
+  <div class="card-body">
+    <ul class="mb-0">
+      {% for flag in ai_result.red_flags %}
+      <li class="text-danger fw-semibold">{{ flag }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+{% if ai_result.immediate_actions %}
+<div class="alert alert-danger d-flex gap-2 align-items-start mb-4">
+  <i class="bi bi-lightning-fill mt-1 fs-5"></i>
+  <div><strong>Immediate Action Required:</strong><br>{{ ai_result.immediate_actions }}</div>
+</div>
+{% endif %}
+
+<!-- RECOMMENDATIONS -->
+{% if ai_result.recommendations %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-bold"><i class="bi bi-lightbulb-fill me-2 text-warning"></i>Clinical Recommendations</div>
+  <div class="card-body">
+    <ul class="mb-0">
+      {% for rec in ai_result.recommendations %}
+      <li class="mb-1">{{ rec }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+<!-- DISCLAIMER -->
+<div class="alert alert-secondary d-flex gap-2 align-items-start">
+  <i class="bi bi-info-circle-fill mt-1"></i>
+  <small>{{ ai_result.disclaimer or 'This AI analysis is a decision-support tool only and should be reviewed by a licensed healthcare professional before any clinical action is taken.' }}</small>
+</div>
+
+{% endif %}
+
+<!-- NAVIGATION -->
+<div class="d-flex gap-2 mt-3">
+  <a href="{{ url_for('user.patient_detail', patient_id=patient.id) }}" class="btn btn-primary">
+    <i class="bi bi-person me-1"></i>Back to Patient
+  </a>
+  <a href="{{ url_for('user.ai_consult', patient_id=patient.id) }}" class="btn btn-outline-success">
+    <i class="bi bi-arrow-repeat me-1"></i>New Consultation
+  </a>
+  <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-house me-1"></i>Dashboard
+  </a>
+</div>
+{% endblock %}

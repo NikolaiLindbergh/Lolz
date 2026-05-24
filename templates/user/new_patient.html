@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Register Patient – ClinAI{% endblock %}
+{% block breadcrumb %}Patients / Register New{% endblock %}
+{% block page_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold py-3"><i class="bi bi-person-plus me-2 text-primary"></i>Register New Patient</div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <h6 class="text-uppercase text-muted fw-bold mb-3 small">Personal Information</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Full Name *</label>
+              <input type="text" name="full_name" class="form-control" placeholder="Enter patient's full name" required />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Age *</label>
+              <input type="number" name="age" class="form-control" min="0" max="130" required />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="">— Select —</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Blood Type</label>
+              <select name="blood_type" class="form-select">
+                <option value="">— Unknown —</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Contact Number</label>
+              <input type="text" name="contact" class="form-control" placeholder="e.g. 09XX-XXX-XXXX" />
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Address</label>
+              <input type="text" name="address" class="form-control" placeholder="City, Province" />
+            </div>
+          </div>
+
+          <h6 class="text-uppercase text-muted fw-bold mb-3 small">Medical Information</h6>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Known Allergies</label>
+              <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Aspirin (or 'None known')" />
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Current Medications</label>
+              <input type="text" name="current_medications" class="form-control" placeholder="e.g. Metformin 500mg, Amlodipine 5mg" />
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Past Medical History</label>
+              <textarea name="medical_history" class="form-control" rows="3" placeholder="Relevant past illnesses, surgeries, hospitalizations…"></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check2 me-1"></i>Register Patient</button>
+            <a href="{{ url_for('user.patients') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

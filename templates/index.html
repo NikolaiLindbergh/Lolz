@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}ClinAI – AI-Powered Clinical Decision Support{% endblock %}
+{% block page_content %}
+<div class="landing-page">
+  <div class="landing-hero text-center py-5">
+    <i class="bi bi-heart-pulse-fill text-danger" style="font-size: 4rem;"></i>
+    <h1 class="display-4 fw-bold mt-3">ClinAI</h1>
+    <p class="lead text-muted">AI-Powered Clinical Decision Support System</p>
+    <p class="text-muted mb-4">Clinical workflows supported by intelligent healthcare insights.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{{ url_for('auth.user_login') }}" class="btn btn-primary btn-lg px-4">
+        <i class="bi bi-box-arrow-in-right me-2"></i>User Login
+      </a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg px-4">
+        <i class="bi bi-person-plus-fill me-2"></i>Register User
+      </a>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div class="feature-card">
+          <i class="bi bi-cpu-fill text-primary fs-1"></i>
+          <h5 class="mt-3">AI Analysis</h5>
+          <p class="text-muted small">Claude AI analyzes patient symptoms and provides clinical decision support.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-card">
+          <i class="bi bi-shield-lock-fill text-success fs-1"></i>
+          <h5 class="mt-3">Secure & Private</h5>
+          <p class="text-muted small">Role-based access control and encrypted data storage for patient safety.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-card">
+          <i class="bi bi-person-lines-fill text-info fs-1"></i>
+          <h5 class="mt-3">Patient Records</h5>
+          <p class="text-muted small">Manage complete patient profiles and consultation history in one place.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-card">
+          <i class="bi bi-bar-chart-fill text-warning fs-1"></i>
+          <h5 class="mt-3">Reports & Audit</h5>
+          <p class="text-muted small">Admin dashboard with system-wide reports and complete audit logging.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center text-muted py-4">
+    <small>ClinAI © 2026. Trusted AI support for healthcare professionals.</small>
+  </footer>
+</div>
+{% endblock %}

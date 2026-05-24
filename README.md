@@ -78,11 +78,15 @@ python app.py
 You will see:
 ```
 ✅ Default admin created → username: admin | password: Admin@1234
-* Running on http://127.0.0.1:5000
+* Running on http://127.0.0.1:8080
 ```
 
 ### Step 7 – Open in Browser
-Go to: **http://127.0.0.1:5000**
+Go to: **http://127.0.0.1:8080**
+
+Admin pages use **`/admin/...`** and user pages use **`/user/...`**. For example:
+- Admin dashboard: **`http://127.0.0.1:8080/admin/dashboard`**
+- User dashboard: **`http://127.0.0.1:8080/user/dashboard`**
 
 ---
 

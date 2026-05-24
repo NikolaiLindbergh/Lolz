@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}All Patients – ClinAI{% endblock %}
+{% block breadcrumb %}Admin / Patients{% endblock %}
+{% block page_content %}
+<div class="mb-4">
+  <h2 class="fw-bold mb-0"><i class="bi bi-folder2-open me-2 text-info"></i>All Patient Records</h2>
+  <p class="text-muted">System-wide patient database</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Patient ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Blood Type</th><th>Registered By</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for p in patients %}
+        <tr>
+          <td><span class="badge bg-light text-dark border">{{ p.patient_id }}</span></td>
+          <td><strong>{{ p.full_name }}</strong></td>
+          <td>{{ p.age or '—' }}</td>
+          <td>{{ p.gender or '—' }}</td>
+          <td>{{ p.blood_type or '—' }}</td>
+          <td>{{ p.created_by_user.full_name or p.created_by_user.username }}</td>
+          <td><small>{{ p.created_at.strftime('%b %d, %Y') }}</small></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No patients registered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

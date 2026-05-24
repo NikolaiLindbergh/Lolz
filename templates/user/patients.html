@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}My Patients – ClinAI{% endblock %}
+{% block breadcrumb %}Patients{% endblock %}
+{% block page_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-0"><i class="bi bi-person-lines-fill me-2 text-primary"></i>My Patients</h2>
+    <p class="text-muted mb-0">Patients you have registered</p>
+  </div>
+  <a href="{{ url_for('user.new_patient') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Register Patient</a>
+</div>
+
+<!-- SEARCH -->
+<form method="GET" class="mb-3">
+  <div class="input-group" style="max-width:400px;">
+    <input type="text" name="search" class="form-control" placeholder="Search by patient name…" value="{{ search }}">
+    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+    {% if search %}<a href="{{ url_for('user.patients') }}" class="btn btn-outline-secondary">Clear</a>{% endif %}
+  </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Blood Type</th><th>Consultations</th><th>Registered</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for p in patients %}
+        <tr>
+          <td><span class="badge bg-light text-dark border">{{ p.patient_id }}</span></td>
+          <td><strong>{{ p.full_name }}</strong></td>
+          <td>{{ p.age or '—' }}</td>
+          <td>{{ p.gender or '—' }}</td>
+          <td>{{ p.blood_type or '—' }}</td>
+          <td><span class="badge bg-primary">{{ p.consultations|length }}</span></td>
+          <td><small>{{ p.created_at.strftime('%b %d, %Y') }}</small></td>
+          <td>
+            <a href="{{ url_for('user.patient_detail', patient_id=p.id) }}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye me-1"></i>View
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center text-muted py-4">
+          {% if search %}No patients match "{{ search }}".{% else %}No patients registered yet. <a href="{{ url_for('user.new_patient') }}">Register one now.</a>{% endif %}
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

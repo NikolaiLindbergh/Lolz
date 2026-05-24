@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Reports – ClinAI{% endblock %}
+{% block breadcrumb %}Admin / Reports{% endblock %}
+{% block page_content %}
+<div class="mb-4">
+  <h2 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill me-2 text-warning"></i>System Reports</h2>
+  <p class="text-muted">Evaluation metrics aligned with the research paper</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-3"><div class="stat-card stat-blue"><div class="stat-icon"><i class="bi bi-people-fill"></i></div><div><div class="stat-number">{{ total_users }}</div><div class="stat-label">Staff Users</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card stat-green"><div class="stat-icon"><i class="bi bi-person-lines-fill"></i></div><div><div class="stat-number">{{ total_patients }}</div><div class="stat-label">Patients</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card stat-purple"><div class="stat-icon"><i class="bi bi-clipboard2-pulse"></i></div><div><div class="stat-number">{{ total_consultations }}</div><div class="stat-label">Consultations</div></div></div></div>
+  <div class="col-md-3"><div class="stat-card stat-orange"><div class="stat-icon"><i class="bi bi-cpu-fill"></i></div><div><div class="stat-number">{{ ai_assisted }}</div><div class="stat-label">AI-Assisted</div></div></div></div>
+</div>
+
+<!-- RESEARCH RESULTS TABLE -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-bold"><i class="bi bi-table me-2 text-primary"></i>Research Evaluation Results (from Paper)</div>
+  <div class="card-body">
+    <div class="alert alert-info small"><i class="bi bi-info-circle me-1"></i>These scores are from the 30-participant evaluation study conducted for the research paper.</div>
+    <table class="table table-bordered text-center">
+      <thead class="table-primary">
+        <tr><th>Evaluation Metric</th><th>Batch 1 (n=10)</th><th>Batch 2 (n=10)</th><th>Batch 3 (n=10)</th><th>Combined Avg</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-start fw-semibold">Functionality</td><td>3.8</td><td>3.7</td><td>3.8</td><td class="fw-bold">3.8</td><td><span class="badge bg-success">Very Good</span></td></tr>
+        <tr><td class="text-start fw-semibold">Usability</td><td>3.9</td><td>4.0</td><td>3.9</td><td class="fw-bold">3.9</td><td><span class="badge bg-success">Very Good</span></td></tr>
+        <tr><td class="text-start fw-semibold">Reliability</td><td>4.0</td><td>3.9</td><td>4.0</td><td class="fw-bold">4.0</td><td><span class="badge bg-success">Very Good</span></td></tr>
+        <tr><td class="text-start fw-semibold">Security & Maintainability</td><td>4.0</td><td>3.9</td><td>3.8</td><td class="fw-bold">3.9</td><td><span class="badge bg-success">Very Good</span></td></tr>
+        <tr class="table-warning"><td class="text-start fw-bold">Overall Weighted Average</td><td>3.9</td><td>3.9</td><td>3.9</td><td class="fw-bold">3.9</td><td><span class="badge bg-primary">Very Good</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CONSULTATION STATUS -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white fw-bold"><i class="bi bi-clipboard2-pulse me-2"></i>Consultation Status Breakdown</div>
+  <div class="card-body">
+    {% if consultations_by_status %}
+    <table class="table">
+      <thead><tr><th>Status</th><th>Count</th></tr></thead>
+      <tbody>
+        {% for status, count in consultations_by_status %}
+        <tr>
+          <td><span class="badge {% if status == 'reviewed' %}bg-success{% elif status == 'closed' %}bg-secondary{% else %}bg-warning text-dark{% endif %}">{{ status|capitalize }}</span></td>
+          <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted text-center py-3">No consultation data yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
